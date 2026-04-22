@@ -15,6 +15,10 @@ Maximiza tu productividad usando combinaciones de teclas:
 
 Alt + Intro o Ctrl + Intro: Guarda o actualiza la nota actual al instante.
 
+
+
 <img width="493" height="426" alt="Captura de pantalla 2026-04-20 225552" src="https://github.com/user-attachments/assets/b30aee6b-b0f8-4476-979f-59824aa5a0d4" />
 
 <img width="1899" height="935" alt="Captura de pantalla 2026-04-20 225813" src="https://github.com/user-attachments/assets/0a95e8e8-f647-4d3f-968b-50ada466f050" />
+
+**Nota:** Requiere instalación de un servidor [usememos](https://usememos.com/)
