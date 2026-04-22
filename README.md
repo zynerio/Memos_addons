@@ -27,7 +27,10 @@ Maximiza tu productividad usando combinaciones de teclas:
 <img width="493" height="426" alt="Captura de pantalla 2026-04-20 225552" src="https://github.com/user-attachments/assets/b30aee6b-b0f8-4476-979f-59824aa5a0d4" />
 
 <p></p>
-
+> [!NOTE]  
+> Este complemento soporta los lenguajes español e inglés. Usa el lenguaje por defecto de su navegador.
+>
+</br>
 > [!IMPORTANT] 
 > Requiere instalación de un servidor [usememos](https://usememos.com/)
 > 
