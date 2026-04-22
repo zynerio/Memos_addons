@@ -1,2 +1,20 @@
 # Memos_addons
 Addon para navegadores. Conectate a tu aplicacion de memos autohospeada desde el navegador.
+Funcionalidades Principales
+Este plugin transforma tu experiencia con Memos permitiéndote gestionar tus notas de forma eficiente y rápida.
+
+Gestión de Imágenes: Sube imágenes directamente desde el editor y visualízalas con carga segura (Auth).
+Notas de Voz: Graba audios cortos y súbelos como recursos.
+* Nota: Si haces clic fuera del popup, la grabación se cortará. Deberás dar permisos de micrófono la primera vez.
+
+Tareas Interactivas: Marca y desmarca tareas directamente en el muro de notas sin entrar en modo edición.
+Búsqueda y Filtros: Usa el buscador en vivo o el calendario interactivo para encontrar cualquier nota por fecha.
+Muro Público: Explora qué están compartiendo otros usuarios en la sección "Explorar".
+Atajos de Teclado
+Maximiza tu productividad usando combinaciones de teclas:
+
+Alt + Intro o Ctrl + Intro: Guarda o actualiza la nota actual al instante.
+
+<img width="493" height="426" alt="Captura de pantalla 2026-04-20 225552" src="https://github.com/user-attachments/assets/b30aee6b-b0f8-4476-979f-59824aa5a0d4" />
+
+<img width="1899" height="935" alt="Captura de pantalla 2026-04-20 225813" src="https://github.com/user-attachments/assets/0a95e8e8-f647-4d3f-968b-50ada466f050" />
