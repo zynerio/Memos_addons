@@ -26,3 +26,5 @@ Alt + Intro o Ctrl + Intro: Guarda o actualiza la nota actual al instante.
 <p></p>
 
 **Nota:** Requiere instalación de un servidor [usememos](https://usememos.com/)
+</br>
+<a target="_blank" href="https://icons8.com/icon/0Jj2OFqGGRVZ/note">Memo</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
