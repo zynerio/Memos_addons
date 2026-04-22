@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Memos Diagnostic Tool</title>
+  <style>
+    :root {
+      --bg-main: #121212;
+      --bg-card: #1e1e1e;
+      --primary: #4e88ff;
+      --primary-hover: #3a6cd9;
+      --text-main: #e2e2e2;
+      --text-muted: #a0a0a0;
+      --border: #333;
+      --danger: #ff4e4e;
+      --success: #00e676;
+    }
+    
+    body { 
+      background: var(--bg-main); 
+      color: var(--text-main); 
+      font-family: 'Inter', -apple-system, sans-serif; 
+      padding: 30px;
+      line-height: 1.6;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 30px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 20px;
+    }
+    
+    h2 { margin: 0; font-weight: 600; }
+    p { color: var(--text-muted); margin-bottom: 20px; }
+    
+    .btn-container {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 30px;
+    }
+    
+    button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+    }
+    
+    #run-btn {
+      background: var(--primary);
+      color: white;
+    }
+    
+    #run-btn:hover { background: var(--primary-hover); transform: translateY(-1px); }
+    
+    #download-btn {
+      background: var(--bg-card);
+      color: var(--text-main);
+      border: 1px solid var(--border);
+    }
+    
+    #download-btn:hover { background: #2a2a2a; }
+    
+    #output {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      font-family: 'Fira Code', 'Courier New', monospace;
+      font-size: 13px;
+      min-height: 400px;
+      overflow-x: auto;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    
+    .test-line { margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.03); }
+    .error { color: var(--danger); font-weight: bold; }
+    .ok { color: var(--success); font-weight: bold; }
+    .endpoint { color: var(--primary); }
+    
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg-main); }
+    ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="14" x="8" y="6" rx="4"></rect><path d="m19 7-3 2"></path><path d="m5 7 3 2"></path><path d="m19 19-3-2"></path><path d="m5 19 3-2"></path><path d="M20 13h-4"></path><path d="M4 13h4"></path><path d="m10 4 1 2"></path><path d="m14 4-1 2"></path></svg>
+    <h2>Memos API Diagnostic</h2>
+  </div>
+  
+  <p>Esta herramienta analiza la comunicación entre el plugin y tu servidor para detectar posibles problemas de configuración o bloqueos de API.</p>
+  
+  <input type="hidden" id="url">
+  <input type="hidden" id="token">
+  
+  <div class="btn-container">
+    <button id="run-btn">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+      Ejecutar Diagnóstico
+    </button>
+    <button id="download-btn" style="display:none;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+      Descargar Reporte (.txt)
+    </button>
+  </div>
+  
+  <div id="output"></div>
+
+  <script src="debug.js"></script>
+</body>
+</html>

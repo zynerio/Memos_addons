@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Memos</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <!-- VISTA DE LOGIN -->
+  <div id="login-view" class="view">
+    <div class="logo-container">
+      <div class="logo" aria-hidden="true"></div>
+      <h1>Memos</h1>
+    </div>
+    <form id="login-form">
+      <div class="input-group">
+        <label for="server-url">URL del Servidor</label>
+        <input type="url" id="server-url" placeholder="https://memos.midominio.com" required>
+      </div>
+      <div class="input-group">
+        <label for="access-token">Access Token</label>
+        <input type="password" id="access-token" placeholder="Tu token de acceso" required>
+      </div>
+
+      <button type="submit" class="btn-primary" style="display:flex; align-items:center; justify-content:center; gap:8px;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
+        Conectar
+      </button>
+    </form>
+    <div id="login-error" class="error-msg hidden">Error al conectar. Verifica tus datos.</div>
+  </div>
+
+  <!-- VISTA DE MEMOS (Nav Rail + Layout) -->
+  <div id="memos-view" class="view hidden">
+    <!-- Overlay para móvil -->
+    <div id="sidebar-overlay" class="sidebar-overlay"></div>
+    
+    <!-- BARRA DE NAVEGACION LATERAL (NAV RAIL) -->
+    <nav class="nav-rail">
+      <div class="rail-top">
+        <div id="rail-workspace-logo-wrap" class="rail-workspace-logo-wrap hidden" title="Servidor">
+          <img id="rail-workspace-logo" src="" alt="Logo del servidor" class="rail-workspace-logo">
+        </div>
+        <button class="rail-item active" data-view="home" title="Mis Memos">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.5 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.5L15.5 3z"></path><polyline points="15 3 15 8 20 8"></polyline><line x1="9" y1="13" x2="15" y2="13"></line><line x1="9" y1="17" x2="15" y2="17"></line></svg>
+        </button>
+        <button class="rail-item" data-view="public" title="Explorar (Público)">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+        </button>
+      </div>
+      <div class="rail-bottom">
+        <button class="rail-item" data-view="settings" title="Opciones">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        </button>
+        <button class="rail-item" data-view="help" title="Ayuda">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+        </button>
+        <button id="rail-logout-btn" class="rail-item" title="Cerrar Sesión" style="color: var(--danger); margin-top: 10px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+        </button>
+      </div>
+    </nav>
+
+    <div class="layout-container">
+      <!-- SIDEBAR (Solo se muestra en 'home') -->
+      <aside class="sidebar" id="main-sidebar">
+        <div class="user-profile">
+          <div id="user-avatar" class="avatar-placeholder"></div>
+          <span id="user-name">Usuario</span>
+        </div>
+
+        <div class="search-box">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input type="text" id="search-input" placeholder="Buscar memos...">
+          <button id="clear-search-btn" class="hidden" title="Limpiar búsqueda">×</button>
+        </div>
+
+        <div class="calendar-section">
+          <div class="calendar-header">
+            <span id="calendar-month-year">Abril 2026</span>
+            <div style="display:flex; gap:4px; align-items:center;">
+              <button id="clear-calendar-btn" class="calendar-btn hidden" title="Limpiar filtro de fecha" style="color:var(--primary); font-weight:bold; font-size:16px;">×</button>
+              <button id="prev-month-btn" class="calendar-btn">&lt;</button>
+              <button id="next-month-btn" class="calendar-btn">&gt;</button>
+            </div>
+          </div>
+          <div class="calendar-weekdays">
+            <div>L</div><div>M</div><div>X</div><div>J</div><div>V</div><div>S</div><div>D</div>
+          </div>
+          <div id="calendar-grid" class="calendar-grid"></div>
+        </div>
+
+        <div class="visibility-filter-section">
+          <h3>Visibilidad</h3>
+          <div class="visibility-pills">
+            <div class="vis-pill active" data-vis="ALL">Todos</div>
+            <div class="vis-pill" data-vis="PRIVATE">👤 Privado</div>
+            <div class="vis-pill" data-vis="PROTECTED">🔒 Protegido</div>
+            <div class="vis-pill" data-vis="PUBLIC">🌍 Público</div>
+          </div>
+        </div>
+
+        <div class="tags-section">
+          <h3>Etiquetas</h3>
+          <div id="tags-list" class="tags-list">
+            <div class="loading-tags">Cargando...</div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- AREA DE CONTENIDO VARIABLE -->
+      <div class="content-router">
+        
+        <!-- VISTA: HOME (MIS MEMOS) -->
+        <main id="view-home" class="main-content main-view">
+          <header>
+            <div style="display:flex; align-items:center;">
+              <button id="sidebar-toggle-btn" class="btn-icon mobile-only" style="margin-right: 10px; display:none;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+              </button>
+              <img id="workspace-logo" src="" style="display:none; width:24px; height:24px; border-radius:4px; object-fit:cover; margin-right:8px;">
+              <h2 id="workspace-title">Mis Notas</h2>
+            </div>
+            <div class="header-actions">
+              <button id="expand-btn" class="btn-icon" title="Abrir en pestaña">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2-2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+              </button>
+              <button id="logout-btn" class="btn-icon" title="Cerrar sesión">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+              </button>
+            </div>
+          </header>
+
+          <div class="editor-container">
+            <div class="toolbar">
+              <button class="format-btn" data-format="heading" title="Encabezado">H</button>
+              <button class="format-btn" data-format="quote" title="Cita">&#10077;</button>
+              <button class="format-btn" data-format="bold" title="Negrita"><b>B</b></button>
+              <button class="format-btn" data-format="italic" title="Cursiva"><i>I</i></button>
+              <button class="format-btn" data-format="code" title="Código">&lt;&gt;</button>
+              <button class="format-btn" data-format="list" title="Lista">ul</button>
+              <button class="format-btn" data-format="olist" title="Lista numerada">ol</button>
+              <button class="format-btn" data-format="todo" title="Tarea">[]</button>
+              <button class="format-btn" data-format="codeblock" title="Bloque de código">{ }</button>
+              <button class="format-btn" data-format="table" title="Tabla">#</button>
+              <div class="divider"></div>
+              <button class="format-btn" id="attach-img-btn" title="Adjuntar Imagen">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+              </button>
+              <button class="format-btn" id="attach-file-btn" title="Adjuntar Archivo">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.51a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+              </button>
+              <button class="format-btn" id="voice-btn" title="Grabar nota de voz">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="22"></line></svg>
+              </button>
+              <span id="recording-status" class="recording-indicator hidden">REC 00:00</span>
+              <canvas id="voice-visualizer" class="recording-visualizer hidden"></canvas>
+              <input type="file" id="image-upload" accept="image/*" class="hidden">
+              <input type="file" id="file-upload" class="hidden">
+            </div>
+            <textarea id="memo-input" placeholder="¿Qué tienes en mente? Usa #etiquetas..."></textarea>
+            <div id="editor-attachments-list" class="editor-attachments-pending hidden"></div>
+            <div class="editor-actions">
+              <span id="editor-status"></span>
+              <div class="editor-controls">
+                <select id="memo-visibility" class="visibility-select">
+                  <option value="PRIVATE">Privado</option>
+                  <option value="PROTECTED">Protegido</option>
+                  <option value="PUBLIC">Público</option>
+                </select>
+                <button id="cancel-edit-btn" class="btn-secondary hidden">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  Cancelar
+                </button>
+                <button id="delete-edit-btn" class="btn-secondary hidden" style="color:var(--danger); border-color:var(--danger);" title="Borrar nota actual">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                  Borrar
+                </button>
+                <button id="save-memo-btn" class="btn-primary-small">
+                  <span id="save-btn-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                  </span>
+                  <span id="save-btn-text">Guardar</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div id="memos-list" class="memos-list">
+            <div class="loading">Cargando notas...</div>
+          </div>
+        </main>
+
+        <!-- VISTA: PUBLIC (EXPLORAR) -->
+        <div id="view-public" class="main-content main-view hidden">
+          <header>
+            <h2 style="display:flex; align-items:center; gap:8px;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+              <span id="title-public">Explorar Memos Públicos</span>
+            </h2>
+          </header>
+          <div id="public-memos-list" class="memos-list">
+            <div class="loading">Cargando comunidad...</div>
+          </div>
+
+          <div id="public-post-overlay" class="public-post-overlay hidden">
+            <div id="public-post-backdrop" class="public-post-backdrop"></div>
+            <div class="public-post-panel">
+              <div class="public-post-panel-header">
+                <h3 style="display:flex; align-items:center; gap:8px;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                  <span>Publicación</span>
+                </h3>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <button id="open-public-post-tab-btn" class="btn-icon" title="Abrir en pestaña">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                  </button>
+                  <button id="close-public-post-btn" class="btn-icon" title="Cerrar">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  </button>
+                </div>
+              </div>
+
+              <div class="public-post-layout">
+                <div class="public-post-main">
+                  <div id="public-post-parent" class="public-post-parent"></div>
+
+                  <div class="public-post-comments-head">
+                    <span id="public-post-comments-count">Comentarios (0)</span>
+                  </div>
+
+                  <div id="public-post-comments-list" class="public-post-comments-list">
+                    <div class="loading">Cargando comentarios...</div>
+                  </div>
+                  <button id="public-post-load-more-btn" class="btn-secondary hidden" style="margin-top:10px; align-self:flex-start;">Cargar más comentarios</button>
+
+                  <div class="public-post-reply-box">
+                    <div id="public-thread-toolbar" class="public-thread-toolbar">
+                      <button class="format-btn" data-format="heading" title="Encabezado">H</button>
+                      <button class="format-btn" data-format="quote" title="Cita">&#10077;</button>
+                      <button class="format-btn" data-format="bold" title="Negrita"><b>B</b></button>
+                      <button class="format-btn" data-format="italic" title="Cursiva"><i>I</i></button>
+                      <button class="format-btn" data-format="code" title="Código">&lt;&gt;</button>
+                      <button class="format-btn" data-format="list" title="Lista">ul</button>
+                      <button class="format-btn" data-format="olist" title="Lista numerada">ol</button>
+                      <button class="format-btn" data-format="todo" title="Tarea">[]</button>
+                      <button class="format-btn" data-format="codeblock" title="Bloque de código">{ }</button>
+                      <button class="format-btn" data-format="table" title="Tabla">#</button>
+                    </div>
+                    <textarea id="public-thread-reply-input" placeholder="Escribe un comentario"></textarea>
+                    <div class="public-post-reply-actions">
+                      <div style="display:flex; align-items:center; gap:8px;">
+                        <span class="public-only-pill">Publico obligatorio</span>
+                        <span id="public-thread-reply-status"></span>
+                      </div>
+                      <div style="display:flex; gap:8px; align-items:center;">
+                        <button id="public-thread-cancel-edit-btn" class="btn-secondary hidden">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                          <span>Cancelar edicion</span>
+                        </button>
+                        <button id="public-thread-reply-btn" class="btn-primary-small">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                          <span>Publicar comentario</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <aside class="public-post-side-meta">
+                  <div class="meta-item">
+                    <label>Creado en</label>
+                    <span id="public-post-created-at">-</span>
+                  </div>
+                  <div class="meta-item">
+                    <label>Ultima actualizacion</label>
+                    <span id="public-post-updated-at">-</span>
+                  </div>
+                </aside>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- VISTA: SETTINGS (OPCIONES) -->
+        <div id="view-settings" class="main-content main-view hidden">
+          <header>
+            <h2 style="display:flex; align-items:center; gap:8px;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2 2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+              <span id="title-settings">Opciones</span>
+            </h2>
+          </header>
+          <div class="settings-container">
+            <div class="settings-tabs">
+              <button class="tab-item active" data-tab="general">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                <span id="tab-text-general">General</span>
+              </button>
+              <button class="tab-item" data-tab="branding">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
+                <span id="tab-text-branding">Servidor</span>
+              </button>
+              <button class="tab-item" data-tab="language">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 6 6"></path><path d="m4 14 6-6 2-3"></path><path d="M2 5h12"></path><path d="M7 2h1"></path><path d="m22 22-5-10-5 10"></path><path d="M14 18h6"></path></svg>
+                <span id="tab-text-language">Idioma</span>
+              </button>
+              <button class="tab-item" data-tab="advanced">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                <span id="tab-text-advanced">Avanzado</span>
+              </button>
+            </div>
+            
+            <div id="tab-general" class="settings-tab-content">
+              <div class="setting-item">
+                <label id="settings-user-label">Usuario Actual</label>
+                <div id="settings-user-info">Cargando...</div>
+                <button id="settings-logout-btn" class="btn-secondary" style="margin-top:10px; color:var(--danger);">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                  <span id="btn-text-logout">Cerrar Sesión / Cambiar Usuario</span>
+                </button>
+              </div>
+            </div>
+
+            <div id="tab-branding" class="settings-tab-content hidden">
+              <div class="setting-item">
+                <label id="server-info-name-label">Nombre del Servidor</label>
+                <div id="server-info-name">Cargando...</div>
+              </div>
+              <div class="setting-item">
+                <label id="server-info-logo-label">URL del Logo</label>
+                <div id="server-info-logo">Cargando...</div>
+              </div>
+              <div id="server-logo-preview-wrap" class="setting-item hidden">
+                <label id="server-logo-preview-label">Previsualización del Logo</label>
+                <div class="server-logo-preview-box">
+                  <img id="server-logo-preview" src="" alt="Logo del servidor">
+                </div>
+              </div>
+              <p id="server-info-note" style="font-size:12px; color:var(--text-muted);">Esta información se obtiene del servidor y no se personaliza localmente en el plugin.</p>
+            </div>
+
+            <div id="tab-language" class="settings-tab-content hidden">
+              <div class="setting-item">
+                <label id="language-setting-label">Elegir Idioma</label>
+                <select id="set-language" class="visibility-select">
+                  <option value="auto">Por defecto (Sistema)</option>
+                  <option value="es">Español</option>
+                  <option value="en">English</option>
+                </select>
+              </div>
+            </div>
+
+            <div id="tab-advanced" class="settings-tab-content hidden">
+              <div class="setting-item">
+                <label id="diagnostics-setting-label">Diagnóstico (Debug)</label>
+                <p style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">Accede a la herramienta de diagnóstico con tus datos actuales.</p>
+                <button id="go-debug-btn" class="btn-secondary">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="14" x="8" y="6" rx="4"></rect><path d="m19 7-3 2"></path><path d="m5 7 3 2"></path><path d="m19 19-3-2"></path><path d="m5 19 3-2"></path><path d="M20 13h-4"></path><path d="M4 13h4"></path><path d="m10 4 1 2"></path><path d="m14 4-1 2"></path></svg>
+                  <span id="btn-text-debug">Ir a Debug</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- VISTA: HELP (AYUDA) -->
+        <div id="view-help" class="main-content main-view hidden">
+          <header>
+            <h2 style="display:flex; align-items:center; gap:8px;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+              <span id="title-help">Ayuda y Guía</span>
+            </h2>
+          </header>
+          <div class="help-content" style="padding:20px; max-width: 700px; margin: 0 auto;">
+            <div class="help-section">
+              <h3>🚀 Funcionalidades Principales</h3>
+              <p>Este plugin transforma tu experiencia con Memos permitiéndote gestionar tus notas de forma eficiente y rápida.</p>
+              <ul class="help-list">
+                <li><b>Gestión de Imágenes:</b> Sube imágenes directamente desde el editor y visualízalas con carga segura (Auth).</li>
+                <li><b>Notas de Voz:</b> Graba audios cortos y súbelos como recursos. 
+                  <p style="font-size:11px; color:var(--danger); margin:5px 0;">* Nota: Si haces clic fuera del popup, la grabación se cortará. Deberás dar permisos de micrófono la primera vez.</p>
+                </li>
+                <li><b>Tareas Interactivas:</b> Marca y desmarca tareas directamente en el muro de notas sin entrar en modo edición.</li>
+                <li><b>Búsqueda y Filtros:</b> Usa el buscador en vivo o el calendario interactivo para encontrar cualquier nota por fecha.</li>
+                <li><b>Muro Público:</b> Explora qué están compartiendo otros usuarios en la sección "Explorar".</li>
+              </ul>
+            </div>
+
+            <div class="help-section">
+              <h3>⌨️ Atajos de Teclado</h3>
+              <p>Maximiza tu productividad usando combinaciones de teclas:</p>
+              <ul class="help-list">
+                <li><code>Alt + Intro</code> o <code>Ctrl + Intro</code>: Guarda o actualiza la nota actual al instante.</li>
+              </ul>
+            </div>
+
+            <div class="help-section">
+              <h3>🔧 Soporte y Diagnóstico</h3>
+              <p>Si experimentas problemas de conexión o visualización, puedes usar nuestra herramienta de diagnóstico avanzada.</p>
+              <button id="help-go-debug-btn" class="btn-secondary" style="margin-top:10px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="14" x="8" y="6" rx="4"></rect><path d="m19 7-3 2"></path><path d="m5 7 3 2"></path><path d="m19 19-3-2"></path><path d="m5 19 3-2"></path><path d="M20 13h-4"></path><path d="M4 13h4"></path><path d="m10 4 1 2"></path><path d="m14 4-1 2"></path></svg>
+                <span id="btn-text-help-debug">Ejecutar Herramienta de Diagnóstico</span>
+              </button>
+            </div>
+
+            <div class="help-footer" style="margin-top:40px; padding-top:20px; border-top: 1px solid var(--border); text-align: center; color: var(--text-muted); font-size: 12px;">
+              <p>Memos Browser Extension - <span id="app-version">v1.0.0</span></p>
+              <p>Hecho con ❤️ para la comunidad de Memos by <a href="https://www.zynerio.com.es">Zynerio</a></p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
