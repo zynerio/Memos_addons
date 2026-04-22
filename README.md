@@ -9,7 +9,8 @@ Este plugin transforma tu experiencia con Memos permitiéndote gestionar tus not
 
 Gestión de Imágenes: Sube imágenes directamente desde el editor y visualízalas con carga segura (Auth).
 Notas de Voz: Graba audios cortos y súbelos como recursos.
-* Nota: Si haces clic fuera del popup, la grabación se cortará. Deberás dar permisos de micrófono la primera vez.
+> .[!Note]
+> Si haces clic fuera del popup, la grabación se cortará. Deberás dar permisos de micrófono la primera vez.
 
 Tareas Interactivas: Marca y desmarca tareas directamente en el muro de notas sin entrar en modo edición.
 Búsqueda y Filtros: Usa el buscador en vivo o el calendario interactivo para encontrar cualquier nota por fecha.
