@@ -4,7 +4,7 @@ ES: Extension para navegador para conectarte a tu instancia autohospedada de Mem
 
 EN: Browser extension to connect to your self-hosted Memos instance and manage notes from a popup or full tab.
 
-<img width="1899" height="935" alt="Captura de pantalla principal" src="https://github.com/user-attachments/assets/0a95e8e8-f647-4d3f-968b-50ada466f050" />
+<img width="1901" height="947" alt="Captura de pantalla 2026-04-22 185137" src="https://github.com/user-attachments/assets/0a4d992b-8ee9-4e80-afbd-06877c53c5ae" />
 
 ## Funcionalidades / Features
 
@@ -59,22 +59,30 @@ EN: Check the technical matrix in [COMPATIBILIDAD.md](COMPATIBILIDAD.md).
 ## Notas importantes / Important notes
 
 ### ES
+>[!TIP]
 > Si haces clic fuera del popup durante una grabacion, se detiene.
 > Debes conceder permisos de microfono la primera vez.
 
+>[!IMPORTANT]
+> Requiere un servidor [usememos](https://usememos.com/) en funcionamiento.
+
+>[!NOTE] 
+>Este complemento soporta espanol e ingles y usa el idioma del navegador por defecto.
+
 ### EN
+>[!TIP]
 > If you click outside the popup while recording, recording stops.
 > You must grant microphone permissions on first use.
 
-> Requiere un servidor [usememos](https://usememos.com/) en funcionamiento.
->
+>[!IMPORTANT]
 > Requires a running [usememos](https://usememos.com/) server.
 
-Este complemento soporta espanol e ingles y usa el idioma del navegador por defecto.
+>[!NOTE] 
+>This addon supports Spanish and English and uses the browser default language.
 
-This addon supports Spanish and English and uses the browser default language.
-
+</br>
 <img width="493" height="426" alt="Captura de pantalla secundaria" src="https://github.com/user-attachments/assets/b30aee6b-b0f8-4476-979f-59824aa5a0d4" />
+</br>
 
 ## Distribucion / Store links
 
