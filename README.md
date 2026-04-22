@@ -3,6 +3,7 @@ Addon para navegadores. Conectate a tu aplicacion de memos autohospeada desde el
 
 <img width="1899" height="935" alt="Captura de pantalla 2026-04-20 225813" src="https://github.com/user-attachments/assets/0a95e8e8-f647-4d3f-968b-50ada466f050" />
 
+<p></p>
 Funcionalidades Principales
 Este plugin transforma tu experiencia con Memos permitiéndote gestionar tus notas de forma eficiente y rápida.
 
@@ -18,7 +19,7 @@ Maximiza tu productividad usando combinaciones de teclas:
 
 Alt + Intro o Ctrl + Intro: Guarda o actualiza la nota actual al instante.
 
-
+<p></p>
 
 <img width="493" height="426" alt="Captura de pantalla 2026-04-20 225552" src="https://github.com/user-attachments/assets/b30aee6b-b0f8-4476-979f-59824aa5a0d4" />
 
