@@ -30,7 +30,7 @@ Maximiza tu productividad usando combinaciones de teclas:
 > [!NOTE]  
 > Este complemento soporta los lenguajes español e inglés. Usa el lenguaje por defecto de su navegador.
 >
-</br>
+
 > [!IMPORTANT] 
 > Requiere instalación de un servidor [usememos](https://usememos.com/)
 > 
