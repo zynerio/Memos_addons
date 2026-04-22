@@ -10,7 +10,7 @@ Este plugin transforma tu experiencia con Memos permitiéndote gestionar tus not
 Gestión de Imágenes: Sube imágenes directamente desde el editor y visualízalas con carga segura (Auth).
 Notas de Voz: Graba audios cortos y súbelos como recursos.
 
-> [!NOTA]  
+> [!NOTE]  
 > Si haces clic fuera del popup, la grabación se cortará. Deberás dar permisos de micrófono la primera vez.
 
 Tareas Interactivas: Marca y desmarca tareas directamente en el muro de notas sin entrar en modo edición.
@@ -28,11 +28,11 @@ Maximiza tu productividad usando combinaciones de teclas:
 
 <p></p>
 
-> [!NOTA]  
+> [!NOTE]  
 > Este complemento soporta los lenguajes español e inglés. Usa el lenguaje por defecto de su navegador.
 >
 
-> [!IMPORTANTE] 
+> [!IMPORTANT] 
 > Requiere instalación de un servidor [usememos](https://usememos.com/)
 > 
 </br>
