@@ -26,8 +26,10 @@ Alt + Intro o Ctrl + Intro: Guarda o actualiza la nota actual al instante.
 <img width="493" height="426" alt="Captura de pantalla 2026-04-20 225552" src="https://github.com/user-attachments/assets/b30aee6b-b0f8-4476-979f-59824aa5a0d4" />
 
 <p></p>
-> [!IMPORTANT]  
+
+> [!IMPORTANT] 
 > Requiere instalación de un servidor [usememos](https://usememos.com/)
+> 
 </br>
 <a target="_blank" href="https://icons8.com/icon/0Jj2OFqGGRVZ/note">Memo</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
 </br></br></br>
