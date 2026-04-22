@@ -35,11 +35,11 @@ Maximiza tu productividad usando combinaciones de teclas:
 <a target="_blank" href="https://icons8.com/icon/0Jj2OFqGGRVZ/note">Memo</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
 </br>
 </br>
- <img width="100" height="75" alt="Captura de pantalla 2026-04-22 120030" src="https://github.com/user-attachments/assets/f0c1498a-7093-4b36-9cd7-c443b2ad4928" />  <img width="100" height="75" alt="Captura de pantalla 2026-04-22 120111" src="https://github.com/user-attachments/assets/2bec7285-845a-448a-9767-c2957749e886" /> 
+   
 
  
 | Imagen 1 | Imagen 2 |
 | :---: | :---: |
-| ![Texto1](URL_IMAGEN_1) | ![Texto2](URL_IMAGEN_2) |
+| <img width="100" height="75" alt="Captura de pantalla 2026-04-22 120030" src="https://github.com/user-attachments/assets/f0c1498a-7093-4b36-9cd7-c443b2ad4928" /> | <img width="100" height="75" alt="Captura de pantalla 2026-04-22 120111" src="https://github.com/user-attachments/assets/2bec7285-845a-448a-9767-c2957749e886" /> |
 
  
