@@ -38,4 +38,6 @@ Pending approval:
 </br>
 | Firefox | Opera |
 |--------------|--------------|
+| Dato 1       | Dato 2       |
+
 | <img width="284" height="99" alt="Captura de pantalla 2026-04-22 120030" src="https://github.com/user-attachments/assets/f0c1498a-7093-4b36-9cd7-c443b2ad4928" />   | <img width="221" height="74" alt="Captura de pantalla 2026-04-22 120111" src="https://github.com/user-attachments/assets/2bec7285-845a-448a-9767-c2957749e886" />   | 
