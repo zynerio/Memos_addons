@@ -230,6 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentFilterVisibility = 'ALL';
   let calendarCurrentDate = new Date();
   let currentUserId = null;
+  const currentUserRefCandidates = new Set();
   let supportsServerCreatorFilter = null;
   const authorProfileCache = new Map();
   let activePublicThreadMemo = null;
@@ -285,6 +286,62 @@ document.addEventListener('DOMContentLoaded', () => {
     if (value.startsWith('users/')) return value;
     if (/^\d+$/.test(value)) return `users/${value}`;
     return value;
+  }
+
+  function clearCurrentUserRefCandidates() {
+    currentUserRefCandidates.clear();
+  }
+
+  function setCurrentUserRef(refLike) {
+    const normalized = normalizeUserRef(refLike);
+    if (!normalized) return null;
+    currentUserId = normalized;
+    currentUserRefCandidates.add(normalized);
+    return normalized;
+  }
+
+  function collectCurrentUserRefCandidates(...refLikes) {
+    refLikes.forEach(refLike => {
+      const normalized = normalizeUserRef(refLike);
+      if (!normalized) return;
+      currentUserRefCandidates.add(normalized);
+      if (!currentUserId) {
+        currentUserId = normalized;
+      }
+    });
+  }
+
+  function isOwnedByCurrentUser(memoLike) {
+    const creator = normalizeUserRef(memoLike && memoLike.creator);
+    if (!creator || currentUserRefCandidates.size === 0) return false;
+
+    if (currentUserRefCandidates.has(creator)) return true;
+
+    const creatorKey = creator.split('/').pop();
+    if (!creatorKey) return false;
+
+    for (const candidate of currentUserRefCandidates) {
+      if (candidate === creator) return true;
+      if (candidate.split('/').pop() === creatorKey) return true;
+    }
+
+    return false;
+  }
+
+  function buildCurrentUserMemoFilters() {
+    const filters = [];
+    const seen = new Set();
+
+    const pushFilter = (value) => {
+      const normalized = normalizeUserRef(value);
+      if (!normalized || seen.has(normalized)) return;
+      seen.add(normalized);
+      filters.push(`creator == "${normalized}"`);
+    };
+
+    pushFilter('users/me');
+    currentUserRefCandidates.forEach(pushFilter);
+    return filters;
   }
 
   function getDisplayNameFromUserData(userData, fallback = 'Usuario') {
@@ -1273,8 +1330,12 @@ document.addEventListener('DOMContentLoaded', () => {
   function inferCurrentUserIdFromMemos(memos) {
     if (!Array.isArray(memos) || memos.length === 0) return null;
 
-    // Los memos PRIVATE/PROTECTED solo deberían pertenecer al usuario autenticado.
-    const privateLike = memos.find(m => m && m.creator && m.visibility && m.visibility !== 'PUBLIC');
+    // Solo PRIVATE es inequívocamente del usuario autenticado.
+    // PROTECTED puede pertenecer a otros usuarios del espacio de trabajo.
+    const privateLike = memos.find(m => {
+      if (!m || !m.creator) return false;
+      return String(m.visibility || '').toUpperCase() === 'PRIVATE';
+    });
     if (privateLike) return normalizeUserRef(privateLike.creator);
 
     // Fallback: si todos tienen el mismo creator, usamos ese valor.
@@ -1308,17 +1369,30 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (e) {
       return null;
     } finally {
-      try {
-        const name = createdMemo && (createdMemo.name || createdMemo.id);
-        if (name) {
-          const memoId = String(name).includes('/') ? String(name).split('/').pop() : String(name);
-          await fetch(`${currentServerUrl}/api/v1/memos/${memoId}`, {
+      const rawName = createdMemo && (createdMemo.name || createdMemo.id);
+      if (!rawName) return;
+
+      const memoName = String(rawName).trim();
+      if (!memoName) return;
+
+      const memoId = memoName.includes('/') ? memoName.split('/').pop() : memoName;
+      const cleanupTargets = [
+        `${currentServerUrl}/api/v1/${encodeURI(memoName)}`,
+        `${currentServerUrl}/api/v1/memos/${encodeURIComponent(memoId)}`
+      ];
+
+      for (const cleanupUrl of cleanupTargets) {
+        try {
+          const cleanupRes = await fetch(cleanupUrl, {
             method: 'DELETE',
             headers: { 'Authorization': `Bearer ${currentAccessToken}` }
           });
+          if (cleanupRes.ok || cleanupRes.status === 404) {
+            break;
+          }
+        } catch (cleanupErr) {
+          continue;
         }
-      } catch (cleanupErr) {
-        console.warn('No se pudo limpiar memo probe', cleanupErr);
       }
     }
   }
@@ -1363,6 +1437,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Vistas
   function showLoginView() {
     currentUserId = null;
+    clearCurrentUserRefCandidates();
     supportsServerCreatorFilter = null;
     allMemos = [];
     loginView.classList.remove('hidden');
@@ -1371,6 +1446,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function showMemosView() {
     currentUserId = null;
+    clearCurrentUserRefCandidates();
     supportsServerCreatorFilter = null;
     loginView.classList.add('hidden');
     memosView.classList.remove('hidden');
@@ -1480,7 +1556,8 @@ document.addEventListener('DOMContentLoaded', () => {
       
       let userData = null;
       if (userRes.ok) {
-        userData = await userRes.json();
+        const rawUserData = await userRes.json().catch(() => null);
+        userData = rawUserData && (rawUserData.data || rawUserData.user || rawUserData);
       } else {
         // 2. Fallback para versiones anteriores: intentar /auth/status
         userRes = await fetch(`${currentServerUrl}/api/v1/auth/status`, {
@@ -1501,7 +1578,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const memos = memoData.memos || [];
             if (memos.length > 0) {
               const creator = memos[0].creator;
-              currentUserId = normalizeUserRef(creator);
+              setCurrentUserRef(creator);
               userRes = await fetch(`${currentServerUrl}/api/v1/${creator}`, {
                 headers: { 'Authorization': `Bearer ${currentAccessToken}` }
               });
@@ -1517,7 +1594,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!currentUserId) {
         const probedUser = await probeCurrentUserIdByCreateDelete();
         if (probedUser) {
-          currentUserId = probedUser;
+          setCurrentUserRef(probedUser);
         }
       }
 
@@ -1526,11 +1603,17 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       if (userData) {
-        const extractedUserRef = userData.name || userData.id || userData.userId || (userData.user && (userData.user.name || userData.user.id));
-        const normalized = normalizeUserRef(extractedUserRef);
-        if (normalized) {
-          currentUserId = normalized; // Guardar ID para filtrar notas
-        }
+        const nestedUser = userData.user && typeof userData.user === 'object' ? userData.user : null;
+        collectCurrentUserRefCandidates(
+          userData.name,
+          userData.username,
+          userData.id,
+          userData.userId,
+          nestedUser && nestedUser.name,
+          nestedUser && nestedUser.username,
+          nestedUser && nestedUser.id,
+          currentUserId
+        );
         applyUserProfileUI(userData);
       } else if (currentUserId) {
         // Cuando no hay endpoint de perfil, mostramos el identificador real detectado del token.
@@ -1962,8 +2045,6 @@ document.addEventListener('DOMContentLoaded', () => {
       seenPublicThreadRefs.clear();
       serverUrlInput.value = '';
       accessTokenInput.value = '';
-      if (serverNameInput) serverNameInput.value = '';
-      if (serverLogoInput) serverLogoInput.value = '';
       showLoginView();
     });
   });
@@ -2453,18 +2534,38 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       // 1. Si el servidor soporta filtro creator==users/me, usarlo.
       // 2. Si no lo soporta, usar listado base sin mostrar warnings repetitivos.
-      let usedServerSideCreatorFilter = false;
       let response;
+      let usedServerSideCreatorFilter = false;
+      let prefetchedMemos = null;
       if (supportsServerCreatorFilter !== false) {
-        response = await fetch(`${currentServerUrl}/api/v1/memos?pageSize=50&filter=creator == "users/me"`, {
-          headers: { 'Authorization': `Bearer ${currentAccessToken}` }
-        });
+        const creatorFilters = buildCurrentUserMemoFilters();
+        for (const filter of creatorFilters) {
+          const filteredRes = await fetch(`${currentServerUrl}/api/v1/memos?pageSize=100&filter=${encodeURIComponent(filter)}`, {
+            headers: { 'Authorization': `Bearer ${currentAccessToken}` }
+          });
 
-        if (response.ok) {
-          supportsServerCreatorFilter = true;
-          usedServerSideCreatorFilter = true;
-        } else if (response.status === 400 || response.status === 404 || response.status === 405) {
-          supportsServerCreatorFilter = false;
+          if (filteredRes.ok) {
+            supportsServerCreatorFilter = true;
+            const filteredData = await filteredRes.json().catch(() => null);
+            const filteredMemos = (filteredData && filteredData.memos) || [];
+
+            // Algunas instancias responden 200 para users/me pero con lista vacía.
+            // Solo aceptamos este filtro si realmente devolvió memos.
+            if (filteredMemos.length > 0) {
+              response = filteredRes;
+              prefetchedMemos = filteredMemos;
+              usedServerSideCreatorFilter = true;
+              break;
+            }
+
+            continue;
+          }
+
+          if (filteredRes.status === 400 || filteredRes.status === 404 || filteredRes.status === 405) {
+            supportsServerCreatorFilter = false;
+            response = null;
+            break;
+          }
         }
       }
 
@@ -2479,11 +2580,29 @@ document.addEventListener('DOMContentLoaded', () => {
         throw new Error('Error al cargar memos');
       }
 
-      const data = await response.json();
-      let memos = data.memos || [];
+      const data = prefetchedMemos ? null : await response.json();
+      let memos = prefetchedMemos || ((data && data.memos) || []);
 
-      // No inferimos desde listados para evitar tomar el creador equivocado en servidores legacy.
       if (!currentUserId) {
+        const inferredUserRef = inferCurrentUserIdFromMemos(memos);
+        if (inferredUserRef) {
+          setCurrentUserRef(inferredUserRef);
+        }
+      }
+
+      // Si el backend ya filtró por el usuario actual, podemos usar ese resultado aunque no hayamos
+      // resuelto todavía el resource name exacto del usuario.
+      if (!currentUserId && !usedServerSideCreatorFilter) {
+        // Último fallback seguro: los privados visibles para el token pertenecen al usuario autenticado.
+        const privateMemos = memos.filter(m => String((m.visibility || '')).toUpperCase() === 'PRIVATE');
+        if (privateMemos.length > 0) {
+          allMemos = privateMemos.filter(m => !isThreadReplyMemo(m));
+          extractTags(allMemos);
+          renderCalendar(allMemos);
+          renderMemos(allMemos);
+          return;
+        }
+
         allMemos = [];
         extractTags(allMemos);
         renderCalendar(allMemos);
@@ -2493,8 +2612,7 @@ document.addEventListener('DOMContentLoaded', () => {
       
       // Filtrado manual siempre que tengamos creator actual; evita mezcla en servidores legacy.
       if (currentUserId) {
-        const idOnly = currentUserId.split('/').pop();
-        memos = memos.filter(m => m.creator === currentUserId || (m.creator && m.creator.split('/').pop() === idOnly));
+        memos = memos.filter(m => isOwnedByCurrentUser(m));
       }
 
       // Las respuestas/comentarios de hilos públicos no se muestran en la página principal.
@@ -2585,9 +2703,7 @@ document.addEventListener('DOMContentLoaded', () => {
           });
 
           const memoCreator = normalizeUserRef(memo.creator);
-          const ownByExact = memoCreator && currentUserId && memoCreator === currentUserId;
-          const ownById = memoCreator && currentUserId && memoCreator.split('/').pop() === currentUserId.split('/').pop();
-          if (ownByExact || ownById) {
+          if (memoCreator && isOwnedByCurrentUser(memo)) {
             threadEditBtn = document.createElement('button');
             threadEditBtn.className = 'thread-edit-btn';
             threadEditBtn.title = 'Editar comentario';
