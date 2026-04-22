@@ -19,8 +19,9 @@ Muro Público: Explora qué están compartiendo otros usuarios en la sección "E
 Atajos de Teclado
 Maximiza tu productividad usando combinaciones de teclas:
 
-Alt + Intro o Ctrl + Intro: Guarda o actualiza la nota actual al instante.
-
+> [!TIP]
+> OAlt + Intro o Ctrl + Intro: Guarda o actualiza la nota actual al instante.
+> 
 <p></p>
 
 <img width="493" height="426" alt="Captura de pantalla 2026-04-20 225552" src="https://github.com/user-attachments/assets/b30aee6b-b0f8-4476-979f-59824aa5a0d4" />
