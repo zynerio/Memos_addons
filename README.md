@@ -26,6 +26,22 @@ EN: Browser extension to connect to your self-hosted Memos instance and manage n
 - Live search, tags and calendar filtering.
 - Explore view for public content and thread replies.
 
+## Novedades v1.4 / What's new in v1.4
+
+### ES
+- Login mas robusto en Firefox con mensajes de error mas claros (token/permisos vs red/CORS/certificado).
+- Nuevo boton para abrir el login en una pestana y evitar perdida de datos al cerrarse el popup.
+- Persistencia de borrador de login (URL y token) entre aperturas del popup.
+- Diagnostico accesible sin sesion previa, con entrada manual de URL/token y autocompletado desde borrador.
+- Mejoras de compatibilidad mantenidas para Memos 0.26.x y 0.27.x (deteccion de usuario, filtros creator y branding fallback).
+
+### EN
+- More robust Firefox login with clearer error messages (token/permissions vs network/CORS/certificate).
+- New button to open login in a full tab to avoid popup data loss.
+- Login draft persistence (URL and token) across popup reopen.
+- Diagnostics can now run without prior login, with manual URL/token input and draft autofill.
+- Kept compatibility improvements for Memos 0.26.x and 0.27.x (user detection, creator filters, branding fallback).
+
 ## Novedades v1.3 / What's new in v1.3
 
 ### ES
@@ -68,6 +84,12 @@ EN: Check the technical matrix in [COMPATIBILIDAD.md](COMPATIBILIDAD.md).
 
 >[!NOTE] 
 >Este complemento soporta espanol e ingles y usa el idioma del navegador por defecto.
+>
+
+> [!IMPORTANT]
+> Firefox bloquea peticiones desde extensiones hacia servidores HTTP locales o HTTPS con certificado no valido.
+> Este bloqueo es de seguridad del navegador y no se puede desactivar desde la extension.
+> Recomendado para Firefox: usar HTTPS con certificado valido (no autofirmado) o una instancia publica con TLS correcto.
 
 ### EN
 >[!TIP]
@@ -80,6 +102,11 @@ EN: Check the technical matrix in [COMPATIBILIDAD.md](COMPATIBILIDAD.md).
 >[!NOTE] 
 >This addon supports Spanish and English and uses the browser default language.
 
+>[!IMPORTANT]
+> Firefox may block extension requests to local HTTP servers or HTTPS endpoints with invalid certificates.
+> This is a browser security restriction and cannot be bypassed by the extension.
+> Recommended for Firefox: use HTTPS with a valid certificate (not self-signed) or a public instance with proper TLS.
+
 </br>
 <img width="493" height="426" alt="Captura de pantalla secundaria" src="https://github.com/user-attachments/assets/b30aee6b-b0f8-4476-979f-59824aa5a0d4" />
 </br>
@@ -88,7 +115,7 @@ EN: Check the technical matrix in [COMPATIBILIDAD.md](COMPATIBILIDAD.md).
 
 | Firefox add-ons | Opera add-ons |
 | :---: | :---: |
-| <img width="182" height="75" alt="Firefox add-ons" src="https://github.com/user-attachments/assets/f0c1498a-7093-4b36-9cd7-c443b2ad4928" /> | <img width="182" height="75" alt="Opera add-ons" src="https://github.com/user-attachments/assets/2bec7285-845a-448a-9767-c2957749e886" /> |
+| <a href="https://addons.mozilla.org/es-ES/firefox/addon/memos-extension/"> <img width="182" height="75" alt="Firefox add-ons" src="https://github.com/user-attachments/assets/f0c1498a-7093-4b36-9cd7-c443b2ad4928" /> </a> | <img width="182" height="75" alt="Opera add-ons" src="https://github.com/user-attachments/assets/2bec7285-845a-448a-9767-c2957749e886" /> |
 
 <a target="_blank" href="https://icons8.com/icon/0Jj2OFqGGRVZ/note">Memo</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
 
