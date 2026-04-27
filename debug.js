@@ -4,12 +4,29 @@ document.addEventListener('DOMContentLoaded', () => {
   const downloadBtn = document.getElementById('download-btn');
   const urlInput = document.getElementById('url');
   const tokenInput = document.getElementById('token');
+  const LOGIN_DRAFT_KEY = 'memosLoginDraft';
   
-  // Pre-rellenar con datos guardados si existen
-  chrome.storage.local.get(['memosServerUrl', 'memosAccessToken'], (result) => {
-    if (result.memosServerUrl) urlInput.value = result.memosServerUrl;
-    if (result.memosAccessToken) tokenInput.value = result.memosAccessToken;
+  // Pre-rellenar con sesión activa o con borrador de login.
+  chrome.storage.local.get(['memosServerUrl', 'memosAccessToken', LOGIN_DRAFT_KEY], (result) => {
+    const draft = result[LOGIN_DRAFT_KEY] || {};
+    const serverUrl = result.memosServerUrl || draft.serverUrl || '';
+    const accessToken = result.memosAccessToken || draft.accessToken || '';
+
+    if (serverUrl) urlInput.value = serverUrl;
+    if (accessToken) tokenInput.value = accessToken;
   });
+
+  function saveLoginDraftFromDebug() {
+    chrome.storage.local.set({
+      [LOGIN_DRAFT_KEY]: {
+        serverUrl: (urlInput.value || '').trim(),
+        accessToken: (tokenInput.value || '').trim()
+      }
+    });
+  }
+
+  urlInput.addEventListener('input', saveLoginDraftFromDebug);
+  tokenInput.addEventListener('input', saveLoginDraftFromDebug);
   
   let rawText = '';
 
@@ -34,9 +51,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const token = tokenInput.value.trim();
     
     if (!baseUrl || !token) {
-      log('Error: No hay credenciales guardadas. Inicia sesión en la extensión primero.', null, 'error');
+      log('Error: Introduce URL y Access Token para ejecutar el diagnóstico (no requiere login previo).', null, 'error');
       return;
     }
+
+    saveLoginDraftFromDebug();
 
     const headers = { 'Authorization': `Bearer ${token}` };
 

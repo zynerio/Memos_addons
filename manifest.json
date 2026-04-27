@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Memos Extension",
-  "version": "1.3",
+  "version": "1.4",
   "description": "Una extensión para gestionar tus notas en un servidor Memos.",
   "icons": {
     "16": "icons/icon16.png",

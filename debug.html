@@ -88,6 +88,48 @@
     .error { color: var(--danger); font-weight: bold; }
     .ok { color: var(--success); font-weight: bold; }
     .endpoint { color: var(--primary); }
+
+    .credentials-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .input-group {
+      margin-bottom: 12px;
+    }
+
+    .input-group label {
+      display: block;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .input-group input {
+      width: 100%;
+      background: #161616;
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 14px;
+    }
+
+    .input-group input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(78, 136, 255, 0.2);
+    }
+
+    .hint {
+      margin: 4px 0 0;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
     
     ::-webkit-scrollbar { width: 8px; }
     ::-webkit-scrollbar-track { background: var(--bg-main); }
@@ -101,9 +143,18 @@
   </div>
   
   <p>Esta herramienta analiza la comunicación entre el plugin y tu servidor para detectar posibles problemas de configuración o bloqueos de API.</p>
-  
-  <input type="hidden" id="url">
-  <input type="hidden" id="token">
+
+  <div class="credentials-card">
+    <div class="input-group">
+      <label for="url">URL del servidor</label>
+      <input type="url" id="url" placeholder="https://memos.tudominio.com">
+    </div>
+    <div class="input-group">
+      <label for="token">Access Token</label>
+      <input type="password" id="token" placeholder="Pega tu token aquí">
+    </div>
+    <p class="hint">Puedes ejecutar diagnóstico sin estar logueado. Si vienes desde el login, estos campos se autocompletan.</p>
+  </div>
   
   <div class="btn-container">
     <button id="run-btn">

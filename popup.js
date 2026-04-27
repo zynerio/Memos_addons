@@ -5,6 +5,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const loginForm = document.getElementById('login-form');
   const serverUrlInput = document.getElementById('server-url');
   const accessTokenInput = document.getElementById('access-token');
+  const openLoginTabBtn = document.getElementById('open-login-tab-btn');
+  const openDebugLoginBtn = document.getElementById('open-debug-login-btn');
   const loginError = document.getElementById('login-error');
   const logoutBtn = document.getElementById('logout-btn');
   const expandBtn = document.getElementById('expand-btn');
@@ -210,6 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentServerLogo = '';
   let currentServerUrl = '';
   let currentAccessToken = '';
+  const LOGIN_DRAFT_KEY = 'memosLoginDraft';
   let brandingFetchInFlight = null;
   let brandingLastFetchTs = 0;
   const BRANDING_CACHE_TTL_MS = 5 * 60 * 1000;
@@ -1416,13 +1419,36 @@ document.addEventListener('DOMContentLoaded', () => {
     const nextUrl = `${window.location.pathname}?${params.toString()}`;
     window.history.replaceState({}, '', nextUrl);
   }
+
+  function saveLoginDraft() {
+    chrome.storage.local.set({
+      [LOGIN_DRAFT_KEY]: {
+        serverUrl: serverUrlInput.value.trim(),
+        accessToken: accessTokenInput.value.trim()
+      }
+    });
+  }
+
+  function clearLoginDraft() {
+    chrome.storage.local.remove(LOGIN_DRAFT_KEY);
+  }
   
   if (!isTabMode) {
     document.body.classList.add('is-popup');
   }
 
   // Cargar datos de nombre y logo guardados
-  chrome.storage.local.get(['memosServerUrl', 'memosAccessToken'], (result) => {
+  chrome.storage.local.get(['memosServerUrl', 'memosAccessToken', LOGIN_DRAFT_KEY], (result) => {
+    const draft = result[LOGIN_DRAFT_KEY] || null;
+    if (draft && typeof draft === 'object') {
+      if (!result.memosServerUrl && typeof draft.serverUrl === 'string') {
+        serverUrlInput.value = draft.serverUrl;
+      }
+      if (!result.memosAccessToken && typeof draft.accessToken === 'string') {
+        accessTokenInput.value = draft.accessToken;
+      }
+    }
+
     if (result.memosServerUrl && result.memosAccessToken) {
       currentServerUrl = result.memosServerUrl;
       currentAccessToken = result.memosAccessToken;
@@ -1731,12 +1757,14 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     const url = serverUrlInput.value.trim().replace(/\/$/, '');
     const token = accessTokenInput.value.trim();
+    saveLoginDraft();
 
     try {
       // 1. Intentar validar contra el endpoint moderno (v0.22+)
       let response = await fetch(`${url}/api/v1/users/me`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
+      let lastStatus = response.status;
       
       let userData = null;
       let hasValidAuth = false;
@@ -1749,6 +1777,7 @@ document.addEventListener('DOMContentLoaded', () => {
         response = await fetch(`${url}/api/v1/auth/status`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
+        lastStatus = response.status;
         if (response.ok) {
           const authData = await response.json();
           userData = authData.data || authData;
@@ -1758,6 +1787,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const memoRes = await fetch(`${url}/api/v1/memos?pageSize=1`, {
             headers: { 'Authorization': `Bearer ${token}` }
           });
+          lastStatus = memoRes.status;
           if (memoRes.ok) {
             const memoData = await memoRes.json().catch(() => ({}));
             if (memoData && (Array.isArray(memoData.memos) || typeof memoData.nextPageToken === 'string')) {
@@ -1770,6 +1800,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const memoRes = await fetch(`${url}/api/v1/memos?pageSize=1`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
+        lastStatus = memoRes.status;
         if (memoRes.ok) {
           const memoData = await memoRes.json().catch(() => ({}));
           if (memoData && (Array.isArray(memoData.memos) || typeof memoData.nextPageToken === 'string')) {
@@ -1780,13 +1811,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Si alguno de los endpoints respondió de forma compatible, aceptamos autenticación
       if (!hasValidAuth && (!userData || typeof userData !== 'object')) {
-        throw new Error('Token inválido o servidor no compatible');
+        throw new Error(`AUTH_HTTP_${lastStatus || 0}`);
       }
 
       chrome.storage.local.set({
         memosServerUrl: url,
         memosAccessToken: token
       }, () => {
+        clearLoginDraft();
         currentServerUrl = url;
         currentAccessToken = token;
         currentServerName = '';
@@ -1796,7 +1828,14 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     } catch (error) {
       loginError.classList.remove('hidden');
-      loginError.textContent = 'Error al conectar. Verifica URL y Token.';
+      const rawMessage = (error && error.message) ? error.message : '';
+      if (/Failed to fetch|NetworkError|Load failed/i.test(rawMessage)) {
+        loginError.textContent = 'No se pudo contactar con el servidor. En Firefox puede ser CORS/certificado HTTPS. Prueba en "Abrir login en una pestaña" y ejecuta Debug.';
+      } else if (/AUTH_HTTP_401|AUTH_HTTP_403/.test(rawMessage)) {
+        loginError.textContent = 'Token no válido o sin permisos. Revisa Access Token.';
+      } else {
+        loginError.textContent = 'Error al conectar. Verifica URL y Token.';
+      }
     }
   });
 
@@ -2045,9 +2084,27 @@ document.addEventListener('DOMContentLoaded', () => {
       seenPublicThreadRefs.clear();
       serverUrlInput.value = '';
       accessTokenInput.value = '';
+      clearLoginDraft();
       showLoginView();
     });
   });
+
+  if (openLoginTabBtn) {
+    openLoginTabBtn.addEventListener('click', () => {
+      saveLoginDraft();
+      chrome.tabs.create({ url: chrome.runtime.getURL('popup.html?mode=tab') });
+    });
+  }
+
+  if (openDebugLoginBtn) {
+    openDebugLoginBtn.addEventListener('click', () => {
+      saveLoginDraft();
+      chrome.tabs.create({ url: chrome.runtime.getURL('debug.html') });
+    });
+  }
+
+  serverUrlInput.addEventListener('input', saveLoginDraft);
+  accessTokenInput.addEventListener('input', saveLoginDraft);
 
   // Expandir a pestaña independiente
   if (expandBtn) {
