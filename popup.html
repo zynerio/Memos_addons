@@ -40,6 +40,30 @@
     </form>
     <div id="login-error" class="error-msg hidden">Error al conectar. Verifica tus datos.</div>
     <div class="login-helper-text">Tip: en Firefox el popup se cierra al perder foco. Usa "Abrir login en una pestaña" para copiar y pegar credenciales sin perder el formulario.</div>
+    <div class="login-helper-text" id="login-http-warning" style="display:none; margin-top:6px;">
+      <div style="display:flex; align-items:center; gap:6px; cursor:pointer; color:#e67e22; font-weight:600;" id="http-warning-toggle">
+        <span>⚠️ Firefox bloquea peticiones HTTP desde extensiones (HTTPS-Only Mode).</span>
+        <span id="http-warning-arrow" style="font-size:10px; transition:transform 0.2s;">▶</span>
+      </div>
+      <div id="http-warning-guide" style="display:none; margin-top:10px; padding:12px; background:var(--bg-card); border:1px solid var(--border); border-radius:10px; font-size:12px; line-height:1.7;">
+        <div style="margin-bottom:10px; color:var(--text-muted);">Tu servidor funciona correctamente pero Firefox intenta forzar HTTPS y la petición falla. Tienes dos opciones:</div>
+        <div style="font-weight:600; color:var(--text-main); margin-bottom:4px;">Opción A — Excepción para tu servidor (recomendada)</div>
+        <ol style="margin:0 0 12px 18px; padding:0; color:var(--text-muted);">
+          <li>Ve a <b style="color:var(--text-main);">Ajustes → Privacidad y Seguridad</b></li>
+          <li>Busca <b style="color:var(--text-main);">HTTPS-Only Mode</b></li>
+          <li>En <b style="color:var(--text-main);">Excepciones</b>, añade la URL de tu servidor (ej: <code>http://192.168.1.50</code>)</li>
+          <li>Recarga la extensión y vuelve a conectar</li>
+        </ol>
+        <div style="font-weight:600; color:var(--text-main); margin-bottom:4px;">Opción B — Desactivar HTTPS-Only globalmente</div>
+        <ol style="margin:0 0 12px 18px; padding:0; color:var(--text-muted);">
+          <li>Abre <code style="background:var(--bg-card); padding:2px 6px; border-radius:4px;">about:config</code> en la barra de direcciones</li>
+          <li>Busca <code style="background:var(--bg-card); padding:2px 6px; border-radius:4px;">dom.security.https_only_mode</code></li>
+          <li>Cambia el valor a <b style="color:var(--text-main);">false</b></li>
+          <li>Recarga la extensión y vuelve a conectar</li>
+        </ol>
+        <div style="color:var(--text-muted); border-top:1px solid var(--border); padding-top:8px;">💡 <b>Alternativa</b>: si usas Chrome o Edge, no necesitas estos cambios — HTTP funciona directamente.</div>
+      </div>
+    </div>
   </div>
 
   <!-- VISTA DE MEMOS (Nav Rail + Layout) -->

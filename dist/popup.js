@@ -1449,9 +1449,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // Mostrar advertencia HTTP si la URL es http:// y estamos en Firefox
-    if (typeof toggleHttpWarning === 'function') toggleHttpWarning();
-
     if (result.memosServerUrl && result.memosAccessToken) {
       currentServerUrl = result.memosServerUrl;
       currentAccessToken = result.memosAccessToken;
@@ -1833,15 +1830,7 @@ document.addEventListener('DOMContentLoaded', () => {
       loginError.classList.remove('hidden');
       const rawMessage = (error && error.message) ? error.message : '';
       if (/Failed to fetch|NetworkError|Load failed/i.test(rawMessage)) {
-        const isHttp = /^http:/.test(url);
-        const isFirefox = /Firefox/i.test(navigator.userAgent);
-        if (isHttp && isFirefox) {
-          loginError.textContent = 'Firefox bloquea peticiones HTTP desde extensiones (HTTPS-Only Mode). Desactiva HTTPS-Only para este servidor en Ajustes → Privacidad → HTTPS-Only, o añade una excepción para tu IP/host. Alternativa: usa Chrome o Edge.';
-        } else if (isHttp) {
-          loginError.textContent = 'No se pudo contactar por HTTP. Verifica que el servidor está activo y accesible.';
-        } else {
-          loginError.textContent = 'No se pudo contactar con el servidor. Verifica URL, Token y que el certificado HTTPS es válido. Prueba en Debug para más detalles.';
-        };
+        loginError.textContent = 'No se pudo contactar con el servidor. En Firefox puede ser CORS/certificado HTTPS. Prueba en "Abrir login en una pestaña" y ejecuta Debug.';
       } else if (/AUTH_HTTP_401|AUTH_HTTP_403/.test(rawMessage)) {
         loginError.textContent = 'Token no válido o sin permisos. Revisa Access Token.';
       } else {
@@ -2114,33 +2103,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  serverUrlInput.addEventListener('input', () => {
-    saveLoginDraft();
-    toggleHttpWarning();
-  });
+  serverUrlInput.addEventListener('input', saveLoginDraft);
   accessTokenInput.addEventListener('input', saveLoginDraft);
-
-  // Toggle guía HTTP Firefox
-  const httpToggle = document.getElementById('http-warning-toggle');
-  const httpArrow = document.getElementById('http-warning-arrow');
-  const httpGuide = document.getElementById('http-warning-guide');
-  if (httpToggle) {
-    httpToggle.addEventListener('click', () => {
-      const visible = httpGuide.style.display !== 'none';
-      httpGuide.style.display = visible ? 'none' : 'block';
-      httpArrow.textContent = visible ? '▶' : '▶';
-      httpArrow.style.transform = visible ? 'rotate(0deg)' : 'rotate(90deg)';
-    });
-  }
-
-  function toggleHttpWarning() {
-    const httpWarning = document.getElementById('login-http-warning');
-    if (httpWarning) {
-      const show = /^http:/.test(serverUrlInput.value) && /Firefox/i.test(navigator.userAgent);
-      httpWarning.style.display = show ? 'block' : 'none';
-      if (!show && httpGuide) httpGuide.style.display = 'none';
-    }
-  }
 
   // Expandir a pestaña independiente
   if (expandBtn) {

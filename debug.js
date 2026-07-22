@@ -57,6 +57,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     saveLoginDraftFromDebug();
 
+    // Advertencia HTTP en Firefox
+    const isHttp = /^http:/.test(baseUrl);
+    const isFirefox = /Firefox/i.test(navigator.userAgent);
+    if (isHttp && isFirefox) {
+      log('⚠️ <b>Firefox detectado con URL HTTP.</b> Firefox activa HTTPS-Only Mode por defecto y bloquea peticiones fetch() desde extensiones hacia servidores HTTP. Soluciones: (1) Ve a Ajustes → Privacidad y Seguridad → HTTPS-Only Mode → Excepciones y añade tu servidor, o (2) desactiva dom.security.https_only_mode en about:config, o (3) usa Chrome/Edge.', null, 'error');
+      log('⚠️ <b>Firefox detected with HTTP URL.</b> HTTPS-Only Mode blocks extension fetch() to HTTP servers. Fix: Settings → Privacy → HTTPS-Only → Add exception for your server, or set dom.security.https_only_mode=false in about:config, or use Chrome/Edge.', null, 'error');
+    }
+
     const headers = { 'Authorization': `Bearer ${token}` };
 
     // TEST 1: Auth Status / User Info
